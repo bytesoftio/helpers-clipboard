@@ -1,6 +1,12 @@
 import { CopyToClipboard } from "./types"
 
-export const copyToClipboard: CopyToClipboard = (value: string) => {
+export const copyToClipboard: CopyToClipboard = (value: string, target = 'body') => {
+  const root = typeof(target) === 'string' ? document.querySelector(target)! : target
+
+  if ( ! target) {
+    throw new Error(`Could not find render target for copy paste text field using selector "${target}"`)
+  }
+
   const el = document.createElement('textarea')
   el.value = value
   el.style.width = '0px'
@@ -9,12 +15,13 @@ export const copyToClipboard: CopyToClipboard = (value: string) => {
   el.style.margin = '0px'
   el.style.opacity = '0'
 
-  document.body.appendChild(el)
+  root.appendChild(el)
 
   el.select()
   document.execCommand('copy')
+
   el.blur()
   document.getSelection()?.empty()
 
-  document.body.removeChild(el)
+  root.removeChild(el)
 }
